@@ -1,0 +1,7 @@
+assert(SMODS.load_file("src/main.lua"))()
+assert(SMODS.load_file("src/jokers.lua"))()
+assert(SMODS.load_file("src/enhancements.lua"))()
+assert(SMODS.load_file("localization/en-us.lua"))()
+assert(SMODS.load_file("src/stickers.lua"))()
+assert(SMODS.load_file("src/editions.lua"))()
+assert(SMODS.load_file("src/blinds.lua"))()

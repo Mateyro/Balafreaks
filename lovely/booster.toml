@@ -1,0 +1,21 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = -1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "G.GAME.pack_choices = self.ability.choose or self.config.center.config.choose or 1"
+position = "after"
+payload = '''
+G.GAME.pack_choices = ((self.ability.choose and self.ability.extra) and math.min(math.floor(self.ability.extra), self.ability.choose)) or 1
+if G.GAME.extra_pack_size then
+    self.ability.extra = self.ability.extra + G.GAME.extra_pack_size
+    G.GAME.pack_choices = G.GAME.pack_choices + G.GAME.extra_pack_size
+end
+self.ability.extra = math.min(self.ability.extra, 1000)
+G.GAME.pack_choices = math.min(G.GAME.pack_choices, 1000)
+G.GAME.pack_size = self.ability.extra
+'''
+match_indent = true

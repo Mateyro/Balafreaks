@@ -388,6 +388,30 @@ return {
                     "held in hand or played",
                 }
             },
+        bl_balf_disabled = {
+                name = "Sans Francisco",
+                text = {
+                    "Wait a minute...",
+                    "this isn't Sans Francisco.",
+                    "All playing cards disabled.",
+                }
+            },
+        bl_balf_eclipse = {
+                name = "Eclipsed Moon",
+                text = {
+                    "Hands set to 1.",
+                    "Discards set to 0.",
+                    "Adds Scrap cards to Deck",
+                    "every time a Hand is drawn.",
+                }
+            },
+        bl_balf_elevator = {
+                name = "Falling Elevator",
+                text = {
+                    "X2 Base chips every",
+                    "hand the Blind isn't beat",
+                }
+            },
     },
     Enhanced = {
 			m_balf_frozen = {

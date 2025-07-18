@@ -75,7 +75,6 @@ SMODS.Blind({
 
         copy_card:add_to_deck()
             G.deck.config.card_limit = G.deck.config.card_limit + 1
-            table.insert(G.playing_cards, copy_card)
             G.hand:emplace(copy_card)
             copy_card.states.visible = nil
 
@@ -170,19 +169,16 @@ SMODS.Blind({
 SMODS.Blind({
     key = 'disabled',
     atlas = 'Blinds',
-    pos = {x = 0, y = 0},
+    pos = {x = 0, y = 7},
     dollars = 5,
     mult = 1,
     boss = {min = 1, max = 10, showdown = true},
-    boss_colour = HEX('AE718E'),
-    config = {extra = {cap = 0.5}},
+    boss_colour = HEX('565656'),
     loc_vars = function(self, info_queue, card)
     end,
     recalc_debuff = function(self, card, from_blind)
-        for i = 1, #G.jokers.cards do
-            if G.jokers.cards[i].edition ~= nil then
-                G.jokers.cards[i]:set_debuff(true)
-            end 
+        for _, playing_card in ipairs(G.playing_cards) do
+            playing_card:set_debuff(true)
         end
     end,
 })
@@ -195,12 +191,11 @@ SMODS.Blind({
 SMODS.Blind({
     key = 'eclipse',
     atlas = 'Blinds',
-    pos = {x = 0, y = 0},
+    pos = {x = 0, y = 8},
     dollars = 5,
-    mult = 1,
+    mult = 4,
     boss = {min = 1, max = 10, showdown = true},
-    boss_colour = HEX('AE718E'),
-    config = {extra = {cap = 0.5}},
+    boss_colour = HEX('D9942F'),
     loc_vars = function(self, info_queue, card)
     end,
     recalc_debuff = function(self, card, from_blind)
@@ -210,6 +205,26 @@ SMODS.Blind({
             end 
         end
     end,
+    set_blind= function(self)
+        G.GAME.current_round.hands_left = 1
+        G.GAME.current_round.discards_left = 0
+    end,
+    drawn_to_hand = function(self)
+
+        local copy_card = create_playing_card({ center = G.P_CENTERS.m_balf_scrap }, G.discard, true, false, nil, true)
+
+        copy_card:add_to_deck()
+            G.deck.config.card_limit = G.deck.config.card_limit + 1
+            G.hand:emplace(copy_card)
+            copy_card.states.visible = nil
+
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    copy_card:start_materialize()
+                    return true
+                end
+            }))
+    end,
 })
 
 -- let me solo them
@@ -217,19 +232,25 @@ SMODS.Blind({
 SMODS.Blind({
     key = 'elevator',
     atlas = 'Blinds',
-    pos = {x = 0, y = 0},
+    pos = {x = 0, y = 9},
     dollars = 5,
-    mult = 1,
+    mult = 5,
     boss = {min = 1, max = 10, showdown = true},
-    boss_colour = HEX('AE718E'),
-    config = {extra = {cap = 0.5}},
+    boss_colour = HEX('5C6165'),
+    config = {extra = {switch = 0}},
     loc_vars = function(self, info_queue, card)
     end,
-    recalc_debuff = function(self, card, from_blind)
-        for i = 1, #G.jokers.cards do
-            if G.jokers.cards[i].edition ~= nil then
-                G.jokers.cards[i]:set_debuff(true)
-            end 
+    press_play = function(self)
+        if  self.config.extra.switch == 0 then
+            self.config.extra.switch = 1
+        end
+    end,
+    drawn_to_hand = function(self)
+        if  self.config.extra.switch == 1 then
+            G.GAME.blind.chips = G.GAME.blind.chips *2
+            G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
+            G.GAME.blind:wiggle()
+            self.config.extra.switch = 0
         end
     end,
 })

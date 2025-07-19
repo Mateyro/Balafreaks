@@ -16,12 +16,28 @@ It is recommended that you include your own atlas. Check the SMODS documentation
 -- CHARLES - STONE CARDS WILL NOW GAIN +50 CHIPS WHEN PLAYED - Uncommon
 -- My name Is - Gives x3 Mult if your in-game name contains Z, T, or C - Common
 -- OBBLONGALE - Becomes "Angry" in boss blinds and returns all cards played to hand - Uncommon
--- Death's Touch - Generates a Death tarot card when blind is defeated on the first hand - Common
+-- Reaper's Touch - Generates a Death tarot card when blind is defeated on the first hand - Common
 -- Evil and fucked up Teto - Generates an FRT card every Hand played - Rare
 
 to_big = to_big or function(x) return x end
 
 -- COMMON
+
+SMODS.Joker {
+    key = "chris",
+    atlas = 'Jokers',
+    pos = { x = 3, y = 6 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 5,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            return {
+                mult = (G.GAME.current_round.discards_left + G.GAME.current_round.hands_left)
+            }
+        end
+    end
+}
 
 SMODS.Joker {
     key = "joe",
@@ -652,6 +668,29 @@ SMODS.Joker {
             else
                 card.ability.extra.buffer = 0
                 card.ability.extra.mode = "Active!"
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "charles",
+    atlas = 'Jokers',
+    pos = { x = 4, y = 6 },
+    rarity = 2,
+    blueprint_compat = true,
+    cost = 7,
+    config = { extra = { chips = 50 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.chips } }
+    end,
+    calculate = function(self, card, context)
+        if context.final_scoring_step then
+            for _, scored_card in ipairs(context.scoring_hand) do
+                if scored_card.config.center == G.P_CENTERS.m_stone then
+                    scored_card.ability.perma_bonus = scored_card.ability.perma_bonus or 0
+                    scored_card.ability.perma_bonus = scored_card.ability.perma_bonus + card.ability.extra.chips
+                end
             end
         end
     end

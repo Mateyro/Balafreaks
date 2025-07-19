@@ -233,6 +233,20 @@ return {
                     "Adds an extra Voucher Slot.",
                 }
             },
+            j_balf_chris = {
+                name = 'Chris',
+                text = {
+                    "Gives {C:mult}Mult{} equal to",
+                    "{C:chips}Hands{} and {C:red}Discards{} left.",
+                }
+            },
+            j_balf_charles = {
+                name = 'Charles',
+                text = {
+                    "Played {C:attention}Stone{} cards",
+                    "gain {C:chips}+#1#{} Chips",
+                }
+            },
             j_balf_unclear = {
                 name = 'Unclear',
                 text = {

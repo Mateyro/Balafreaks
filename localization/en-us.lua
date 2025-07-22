@@ -191,7 +191,7 @@ return {
                 text = {
                     "{C:attention}Skips an ante{} at the end",
                     "of every {C:attention}boss blind{}.",
-                    "This joker gains {X:dark_edition,C:white}^0.5{} Mult",
+                    "This joker gains {X:dark_edition,C:white}^#2#{} Mult",
                     "per every Ante Skipped {C:attention}by itself{}.",
                     "{C:inactive}(Currently{} {X:dark_edition,C:white}^#1#{} {C:inactive}Mult){}",
                 }
@@ -238,6 +238,29 @@ return {
                 text = {
                     "Gives {C:mult}Mult{} equal to",
                     "{C:chips}Hands{} and {C:red}Discards{} left.",
+                }
+            },
+            j_balf_myname = {
+                name = 'My name is',
+                text = {
+                    "Gives {X:mult,C:white}X#1#{} Mult if",
+                    "your {C:attention}name{} contains",
+                    "{C:attention}Z T{} or {C:attention}C{}",
+                }
+            },
+            j_balf_reaper = {
+                name = "Reaper's Touch",
+                text = {
+                    "Generates a {C:tarot}Death{} card",
+                    "when blind is {C:attention}defeated{}",
+                    "on the {C:attention}first hand{}",
+                }
+            },
+            j_balf_dispenser = {
+                name = "Dispenser",
+                text = {
+                    "{C:attention}Steel{} cards and {C:attention}Gold{}",
+                    "cards now count as {C:attention}eachother{}",
                 }
             },
             j_balf_charles = {
@@ -344,11 +367,22 @@ return {
                     "when boss {C:attention}blind{} is selected.",
                 }
             },
+            j_balf_tyronne = {
+                name = 'Tyrone',
+                text = {
+                    "Each time the played",
+                    "hand isn't a {C:attention}straight{},",
+                    "add {C:chips}+#2#{} to Chips",
+                    "{C:inactive}(Currently{} {C:chips}+#1#{} {C:inactive}Chips){}",
+                }
+            },
             j_balf_nokaru = {
                 name = 'Nokaru',
                 text = {
-                    "Applies {C:default}The Orb{}",
+                    "Applies {C:attention}The Orb{}",
                     "to every card played.",
+                    "Each {C:attention}Orb{} now also counts",
+                    "as a random {C:attention}Seal{}"
                 }
             },
         },
@@ -384,9 +418,10 @@ return {
         bl_balf_miner = {
                 name = "The Miner",
                 text = {
-                    "Every other time a hand",
-                    "is drawn, all cards held in",
-                    "hand are converted to Stone",
+                    "Every time a hand",
+                    "is played, all cards held in",
+                    "hand have a 1 in 4 chance",
+                    "to be turned to stone",
                 }
             },
         bl_balf_station = {

@@ -131,3 +131,8 @@ SMODS.Rarity({
 	loc_txt = {},
 	badge_colour = Balafreaks.colours.rainbow,
 })
+
+SMODS.Sound{
+    key = "mynameis",
+    path = "mynameis.ogg",
+}

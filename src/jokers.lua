@@ -1,43 +1,27 @@
---[[
+-- NEW JOKERS TO BE ADDED NEXT UPDATE
+-- MaxDesignPro - hit that Help Me! to give +1 chip to this card - Uncommon
+-- Hacker - Randomizes your money, either x0.5 OR X2 at the end of every blind - Common
+-- Batpeg - Pressing Select on a non Boss blind Skips it, +6$ per blind skipped. - Common
+-- Two Gravity Hammers - If a pair of Clubs is played, multiplies XMult by 1.25 - Rare
+-- Waveify - Destroys Joker to it's right, gives you dollars equal to X3 the Sell value of the card destroyed. - Uncommon
+-- CAN I BEAT BALATRO WITH AN AI - Auto-selects 5 cards, x3 Mult - Uncommon
 
-1. This mod will use the default Joker atlas for convenience and to not redistribute Balatro assets.
-It is recommended that you include your own atlas. Check the SMODS documentation or example mods for more info.
+-- Hackbetals Recode
+-- Matt Nerf (Done)
+-- Guwbi Other Mod Fix (Done)
+-- Nokaru functionality rework (Done)
+-- Joe Extinct feature (Done)
+-- Tanaka Code Touchup (Done)
+-- Ems Rebalance (Done)
 
-2. Unlike some vanilla Jokers that put values in card.ability, these will all use card.ability.extra as it's best practice for modded Jokers.
-
-3. The objective is not to recreate vanilla code 1-to-1 but to highlight best practices. So while effects should be practically the same, there might be some small differences.
-
-4. Only some of Balatro's specific quirks will be explained. It is recommended to brush up on basic programming logic and basic lua knowledge before starting, as well as reading the documentation on Jokers and calculate functions.
-
-]] --
-
--- NEW JOKERS TO BE ADDED
--- CHRIS - +3 Mult per hand or discard left - Common
--- CHARLES - STONE CARDS WILL NOW GAIN +50 CHIPS WHEN PLAYED - Uncommon
--- My name Is - Gives x3 Mult if your in-game name contains Z, T, or C - Common
+-- JOKERS PLANNED FOR ANOTHER UPDATE
 -- OBBLONGALE - Becomes "Angry" in boss blinds and returns all cards played to hand - Uncommon
--- Reaper's Touch - Generates a Death tarot card when blind is defeated on the first hand - Common
+-- The Opportunity
 -- Evil and fucked up Teto - Generates an FRT card every Hand played - Rare
 
 to_big = to_big or function(x) return x end
 
 -- COMMON
-
-SMODS.Joker {
-    key = "chris",
-    atlas = 'Jokers',
-    pos = { x = 3, y = 6 },
-    rarity = 1,
-    blueprint_compat = true,
-    cost = 5,
-    calculate = function(self, card, context)
-        if context.joker_main then
-            return {
-                mult = (G.GAME.current_round.discards_left + G.GAME.current_round.hands_left)
-            }
-        end
-    end
-}
 
 SMODS.Joker {
     key = "joe",
@@ -46,6 +30,7 @@ SMODS.Joker {
     rarity = 1,
     blueprint_compat = true,
     cost = 3,
+    no_pool_flag = 'joe_change',
     config = { extra = { mult = 4, evo = 0 }, },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.mult } }
@@ -56,6 +41,7 @@ SMODS.Joker {
                 mult = card.ability.extra.mult
             }
             else if context.selling_self then
+                G.GAME.pool_flags.joe_change = true
                 SMODS.add_card {
                     set = 'Joker',
                     key = 'j_balf_joe2',
@@ -63,6 +49,7 @@ SMODS.Joker {
                 else if context.end_of_round and G.GAME.blind.boss and context.game_over == false and context.main_eval and not context.blueprint then
                     card.ability.extra.evo = card.ability.extra.evo+1
                     if card.ability.extra.evo > 2 then
+                        G.GAME.pool_flags.joe_change = true
                         card:start_dissolve()
                         SMODS.add_card {
                             set = 'Joker',
@@ -71,6 +58,9 @@ SMODS.Joker {
                     end
                 end
             end
+        end
+        in_pool = function(self, args)
+            return G.GAME.pool_flags.joe_change
         end
     end
 }
@@ -178,6 +168,74 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
+    key = "reaper",
+    atlas = 'Jokers',
+    pos = { x = 6, y = 6 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 6,
+    calculate = function(self, card, context)
+        if context.end_of_round and context.game_over == false and context.main_eval and G.GAME.current_round.hands_played < 2 then
+            G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+            G.E_MANAGER:add_event(Event({
+                func = (function()
+                    SMODS.add_card {
+                        set = 'Tarot',
+                        key = 'c_death',
+                    }
+                    G.GAME.consumeable_buffer = 0
+                    return true
+                end)
+            }))
+            return {
+                message = localize('k_plus_tarot'),
+                colour = G.C.SECONDARY_SET.Tarot,
+                remove = true
+            }
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "chris",
+    atlas = 'Jokers',
+    pos = { x = 3, y = 6 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 5,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            return {
+                mult = (G.GAME.current_round.discards_left + G.GAME.current_round.hands_left)
+            }
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "tyronne",
+    atlas = 'Jokers',
+    pos = { x = 7, y = 6 },
+    rarity = 1,
+    blueprint_compat = false,
+    cost = 5,
+    config = { extra = { chips = 0, chipmod = 15 }, },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.chips, card.ability.extra.chipmod } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            if context.scoring_name ~= 'Straight' then
+                card.ability.extra.chips = card.ability.extra.chips+card.ability.extra.chipmod
+            end
+            return{
+                chips = card.ability.extra.chips
+            }
+        end
+    end
+}
+
+SMODS.Joker {
     key = "greg",
     atlas = 'Jokers',
     pos = { x = 3, y = 4 },
@@ -279,14 +337,14 @@ SMODS.Joker {
         return { vars = { card.ability.extra.xmult, card.ability.extra.xmultbase, card.ability.extra.xmultbase + (card.ability.extra.xmult * ace_tally) } }
     end,
     calculate = function(self, card, context)
-        local ace_tally = 0
+        if context.joker_main then
+            local ace_tally = 0
         if G.playing_card then
             for _, playing_card in ipairs(G.playing_cards) do
                 if playing_card:get_id() == 14 then ace_tally = ace_tally +1 
                 end
             end
         end
-        if context.joker_main then
         return {
                 Xmult_mod = card.ability.extra.xmultbase + (card.ability.extra.xmult * ace_tally),
                 message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmultbase + (card.ability.extra.xmult * ace_tally) } }
@@ -313,6 +371,99 @@ SMODS.Joker {
                 message = localize('k_seal'),
                 colour = G.C.UI.TEXT_DARK
             }
+        end
+        if context.repetition and context.cardarea == G.play and context.other_card:get_seal() == 'balf_orb' then
+            if context.other_card.ability.orb == nil then
+                context.other_card.ability.orb = math.random(1, 4)
+            end
+            if context.other_card.ability.orb == 1 then
+                print("1")
+                if context.repetition then
+                    return {
+                        repetitions = 1,
+                    }
+                end
+            end
+        end
+        if context.cardarea == G.play and context.individual and context.other_card:get_seal() == 'balf_orb' and context.other_card.ability.orb == 3 then
+            print("3")
+            G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + 3
+            return {
+                dollars = 3,
+                    func = function()
+                    G.E_MANAGER:add_event(Event({
+                        func = function()
+                            G.GAME.dollar_buffer = 0
+                            return true
+                        end
+                    }))
+                end
+            }
+        end
+        if context.end_of_round and context.cardarea == G.hand and context.other_card:get_seal() == 'balf_orb' then
+            if context.other_card.ability.orb == nil then
+                context.other_card.ability.orb = math.random(1, 4)
+            end
+            if context.other_card.ability.orb == 2 and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                print("2")
+                G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'before',
+                    delay = 0.0,
+                    func = function()
+                        if G.GAME.last_hand_played then
+                            local _planet = nil
+                            for k, v in pairs(G.P_CENTER_POOLS.Planet) do
+                                if v.config.hand_type == G.GAME.last_hand_played then
+                                    _planet = v.key
+                                end
+                            end
+                            if _planet then
+                                SMODS.add_card({ key = _planet })
+                            end
+                            G.GAME.consumeable_buffer = 0
+                        end
+                        return true
+                    end
+                }))
+                return { message = localize('k_plus_planet'), colour = G.C.SECONDARY_SET.Planet }
+            end
+        end
+        if context.discard and context.other_card:get_seal() == 'balf_orb' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+            if context.other_card.ability.orb == nil then
+                context.other_card.ability.orb = math.random(1, 4)
+            end
+            if context.other_card.ability.orb == 4 then
+                print("4")
+                G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'before',
+                    delay = 0.0,
+                    func = function()
+                        SMODS.add_card({ set = 'Tarot' })
+                        G.GAME.consumeable_buffer = 0
+                        return true
+                    end
+                }))
+                return { message = localize('k_plus_tarot'), colour = G.C.PURPLE }
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "dispenser",
+    atlas = 'Jokers',
+    pos = { x = 0, y = 7 },
+    rarity = 2,
+    blueprint_compat = false,
+    cost = 7,
+    calculate = function(self, card, context)
+        if context.other_card.config.center == G.P_CENTERS.m_gold then
+                return {m_steel = true}
+        end
+        if context.other_card.config.center == G.P_CENTERS.m_steel then
+                return {m_gold = true}
         end
     end
 }
@@ -474,9 +625,6 @@ SMODS.Joker {
                     return {
                         chips = card.ability.extra.chips + chipL
                     }
-                else if G.jokers.cards[my_pos + 1].label == 'Egg' then
-
-                end
                 end
                 end
                 end
@@ -691,6 +839,40 @@ SMODS.Joker {
                     scored_card.ability.perma_bonus = scored_card.ability.perma_bonus or 0
                     scored_card.ability.perma_bonus = scored_card.ability.perma_bonus + card.ability.extra.chips
                 end
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "myname",
+    atlas = 'Jokers',
+    pos = { x = 5, y = 6 },
+    rarity = 2,
+    blueprint_compat = true,
+    cost = 6,
+    config = { extra = { xmult = 2, question = false } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult, card.ability.extra.question } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local length = string.len(string.lower(G.PROFILES[G.SETTINGS.profile].name))
+            local a = 1
+            while a ~= (length+1) do
+                local temp = string.sub(string.lower(G.PROFILES[G.SETTINGS.profile].name), a, a)
+                a = a+1
+                if temp == "z" or temp == "t" or temp == "c" then
+                    card.ability.extra.question = true
+                    break
+                end
+            end
+            if card.ability.extra.question == true then
+                return {
+                    Xmult_mod = card.ability.extra.xmult,
+                    message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } },
+                    play_sound('balf_mynameis', 0.9 + math.random() * 0.1, 0.8),
+                }
             end
         end
     end
@@ -949,7 +1131,7 @@ SMODS.Joker {
     rarity = 4,
     blueprint_compat = true,
     cost = 25,
-    config = { extra = { emult = 1, emult_gain = 0.5, parry = 1 } },
+    config = { extra = { emult = 1, emult_gain = 0.3, parry = 1 } },
     loc_vars = function(self, info_queue, card)
     return { vars = {card.ability.extra.emult, card.ability.extra.emult_gain, card.ability.extra.parry} }
     end,
@@ -1048,6 +1230,10 @@ SMODS.Joker {
             card.ability.extra.minutes = 0
             card.ability.extra.start = love.timer.getTime()
             card.ability.extra.timer = 0
+        end
+        if card.ability.extra.timer < 0 then
+            card.ability.extra.timer = 0
+            card.ability.extra.start = love.timer.getTime()
         end
         TimerGuwbi.seconds = tostring(card.ability.extra.timer)
         TimerGuwbi.mins = tostring(card.ability.extra.minutes)

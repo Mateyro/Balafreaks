@@ -6,7 +6,7 @@ SMODS.Sticker{
         name="Touched",
 		label="Touched",
         text = {
-            "{X:mult,C:white}X2{} Mult if Ems",
+            "{X:mult,C:white}X1.15{} Mult if Ems",
             "isn't held",
             "in hand",
         }
@@ -22,7 +22,7 @@ SMODS.Sticker{
                     ret = 1
                     break
                 else if G.jokers.cards[i].config.center_key ~= 'j_balf_ems' then
-                        ret = 2
+                        ret = 1.15
                     end
                 end
             end

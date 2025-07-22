@@ -97,13 +97,18 @@ SMODS.Blind({
     mult = 2,
     boss = {min = 1, max = 10},
     boss_colour = HEX('5C7738'),
-    config = {extra = {other = -1}},
-    drawn_to_hand = function(self)
+    config = {extra = {other = 0, odds = 4}},
+    press_play = function(self)
         if self.config.extra.other == 0 then
-            self.config.extra.other = self.config.extra.other+1
-        else
+            self.config.extra.other = 1
+        end
+    end,
+    drawn_to_hand = function(self)
+        if self.config.extra.other == 1 then
             for i = 1, #G.hand.cards do
+                if pseudorandom('balf_miner') < G.GAME.probabilities.normal / self.config.extra.odds then
                 G.hand.cards[i]:set_ability('m_stone', nil, true)
+                end
             end
             G.GAME.blind:wiggle()
             self.config.extra.other = 0

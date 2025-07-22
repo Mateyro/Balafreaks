@@ -738,7 +738,7 @@ SMODS.Joker {
                 if playing_card:is_suit((card.ability.extra.suit)) and playing_card:get_id() == 12 then queen_tally = queen_tally + 1 end
             end
         end
-        return { vars = { card.ability.extra.mult, card.ability.extra.mult * queen_tally, localize(card.ability.extra.suit, 'suits_singular') } }
+        return { vars = { card.ability.extra.mult, (card.ability.extra.mult * queen_tally), localize(card.ability.extra.suit, 'suits_singular') } }
     end,
     calculate = function(self, card, context)
         if context.joker_main then

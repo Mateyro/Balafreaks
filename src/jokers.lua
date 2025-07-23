@@ -144,7 +144,7 @@ SMODS.Joker {
     rarity = 1,
     blueprint_compat = true,
     cost = 24,
-    config = { extra = { xmult = 4 }, },
+    config = { extra = { xmult = 2.5 }, },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.xmult } }
     end,
@@ -377,7 +377,6 @@ SMODS.Joker {
                 context.other_card.ability.orb = math.random(1, 4)
             end
             if context.other_card.ability.orb == 1 then
-                print("1")
                 if context.repetition then
                     return {
                         repetitions = 1,
@@ -386,7 +385,6 @@ SMODS.Joker {
             end
         end
         if context.cardarea == G.play and context.individual and context.other_card:get_seal() == 'balf_orb' and context.other_card.ability.orb == 3 then
-            print("3")
             G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + 3
             return {
                 dollars = 3,
@@ -405,7 +403,6 @@ SMODS.Joker {
                 context.other_card.ability.orb = math.random(1, 4)
             end
             if context.other_card.ability.orb == 2 and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                print("2")
                 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                 G.E_MANAGER:add_event(Event({
                     trigger = 'before',
@@ -434,7 +431,6 @@ SMODS.Joker {
                 context.other_card.ability.orb = math.random(1, 4)
             end
             if context.other_card.ability.orb == 4 then
-                print("4")
                 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                 G.E_MANAGER:add_event(Event({
                     trigger = 'before',
@@ -459,11 +455,13 @@ SMODS.Joker {
     blueprint_compat = false,
     cost = 7,
     calculate = function(self, card, context)
-        if context.other_card.config.center == G.P_CENTERS.m_gold then
-                return {m_steel = true}
-        end
-        if context.other_card.config.center == G.P_CENTERS.m_steel then
-                return {m_gold = true}
+        if context.check_enhancement then
+            if context.other_card.config.center == G.P_CENTERS.m_gold then
+                    return {m_steel = true}
+            end
+            if context.other_card.config.center == G.P_CENTERS.m_steel then
+                    return {m_gold = true}
+            end
         end
     end
 }
@@ -801,18 +799,21 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.using_consumeable and not context.blueprint and context.consumeable.ability.set == 'Planet' then
             if card.ability.extra.buffer == 0 then
-                card.ability.extra.mode = "Inactive"
-                card.ability.extra.buffer = card.ability.extra.buffer +1
-                gen = context.consumeable
-                G.E_MANAGER:add_event(Event({
-                        func = (function()
-                        SMODS.add_card {
-                            key = gen.config.center_key
-                        }
-                        G.GAME.consumeable_buffer = 0
-                        return true
+                if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    card.ability.extra.mode = "Inactive"
+                    card.ability.extra.buffer = card.ability.extra.buffer +1
+                    gen = context.consumeable
+                    G.E_MANAGER:add_event(Event({
+                            func = (function()
+                            SMODS.add_card {
+                                key = gen.config.center_key
+                            }
+                            G.GAME.consumeable_buffer = 0
+                            return true
                         end)
                     }))
+                end
             else
                 card.ability.extra.buffer = 0
                 card.ability.extra.mode = "Active!"
@@ -1107,7 +1108,7 @@ SMODS.Joker {
     end,
     calculate = function(self, card, context)
         if context.final_scoring_step then
-            card.ability.extra.xmult = card.ability.extra.xmult+((G.GAME.dollars)*2)
+            card.ability.extra.xmult = card.ability.extra.xmult+((G.GAME.dollars)*3)
             ease_dollars(0-G.GAME.dollars)
             return { Xmult_mod = card.ability.extra.xmult,
                     message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } } }
@@ -1244,19 +1245,19 @@ SMODS.Joker {
             if context.end_of_round and G.GAME.blind.boss and context.game_over == false and context.main_eval then
                 card.ability.extra.echips = card.ability.extra.echips +0.25
                 card.ability.extra.minutes = card.ability.extra.minutes -1
-            elseif context.joker_main then
-                return {
-                    message = localize({
-                        type = "variable",
-                        key = "k_powchips",
-                        vars = {
-                            number_format(card.ability.extra.echips),
-                        },
-                    }),
-                    Echip_mod = card.ability.extra.echips,
-                    colour = G.C.DARK_EDITION,
-                }
             end
+        elseif context.joker_main then
+            return {
+                message = localize({
+                    type = "variable",
+                    key = "k_powchips",
+                    vars = {
+                        number_format(card.ability.extra.echips),
+                    },
+                }),
+                Echip_mod = card.ability.extra.echips,
+                colour = G.C.DARK_EDITION,
+            }
         end
     end
 }

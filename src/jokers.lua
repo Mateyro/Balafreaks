@@ -474,7 +474,7 @@ SMODS.Joker {
     blueprint_compat = false,
     cost = 8,
                 calculate = function(self, card, context)
-                    if context.before and context.main_eval and not context.blueprint then 
+                    if context.cardarea == G.play and context.individual and not context.blueprint then
                         -- just the basic "Hey, hand is getting played", this is mostly a note for my future 
                         -- self cause i well know that im gonna forget that this is just the basics and try to 
                         -- research whatever the hell i did

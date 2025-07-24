@@ -147,21 +147,24 @@ SMODS.Blind({
     press_play = function(self)
         for i = 1, #G.hand.cards do
             local val = (G.hand.cards[i]:get_id())-1
-            local suit = G.hand.cards[i].base.suit
-            if val == 11 then
-                val = "Jack"
-            else if val == 12 then
-                val = "Queen"
-            else if val == 13 then
-                val = "King"
-            else if val == 1 then
-                val = "Ace"
-            end
-            end
-            end
-            end
-            local valfull = tostring(val)
-            assert(SMODS.change_base(G.hand.cards[i], suit, valfull)) 
+
+                local suit = G.hand.cards[i].base.suit
+                if val > 0 then
+                    if val == 11 then
+                        val = "Jack"
+                    else if val == 12 then
+                        val = "Queen"
+                    else if val == 13 then
+                        val = "King"
+                    else if val == 1 then
+                        val = "Ace"
+                    end
+                    end
+                    end
+                    end
+                    local valfull = tostring(val)
+                    assert(SMODS.change_base(G.hand.cards[i], suit, valfull)) 
+                end
         end
         G.GAME.blind:wiggle()
     end,
@@ -176,7 +179,7 @@ SMODS.Blind({
     atlas = 'Blinds',
     pos = {x = 0, y = 7},
     dollars = 5,
-    mult = 1,
+    mult = 0.25,
     boss = {min = 1, max = 10, showdown = true},
     boss_colour = HEX('565656'),
     loc_vars = function(self, info_queue, card)

@@ -162,6 +162,15 @@ return {
                     "edition and add {C:dark_edition}+1 Joker Slot{}",
                 }
             },
+            j_balf_scam = {
+                name = 'SCAM',
+                text = {
+                    "At the end of every {C:attention}Blind{},",
+                    "{C:green}#1# in #2# Chance{} to halve",
+                    "your {C:money}money{}, if {C:green}Chance{} {C:red}failed{}",
+                    "double your {C:money}money{}."
+                }
+            },
             j_balf_ems = {
                 name = 'Ems',
                 text = {
@@ -231,6 +240,12 @@ return {
                 name = 'Maddyx',
                 text = {
                     "Adds an extra Voucher Slot.",
+                }
+            },
+            j_balf_batpeg = {
+                name = 'Batpeg',
+                text = {
+                    "{C:money}+#1#${} Every time a blind is {C:attention}Skipped{}",
                 }
             },
             j_balf_chris = {

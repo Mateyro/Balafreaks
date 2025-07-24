@@ -1,18 +1,10 @@
 -- NEW JOKERS TO BE ADDED NEXT UPDATE
 -- MaxDesignPro - hit that Help Me! to give +1 chip to this card - Uncommon
--- Hacker - Randomizes your money, either x0.5 OR X2 at the end of every blind - Common
--- Batpeg - Pressing Select on a non Boss blind Skips it, +6$ per blind skipped. - Common
 -- Two Gravity Hammers - If a pair of Clubs is played, multiplies XMult by 1.25 - Rare
 -- Waveify - Destroys Joker to it's right, gives you dollars equal to X3 the Sell value of the card destroyed. - Uncommon
 -- CAN I BEAT BALATRO WITH AN AI - Auto-selects 5 cards, x3 Mult - Uncommon
 
 -- Hackbetals Recode
--- Matt Nerf (Done)
--- Guwbi Other Mod Fix (Done)
--- Nokaru functionality rework (Done)
--- Joe Extinct feature (Done)
--- Tanaka Code Touchup (Done)
--- Ems Rebalance (Done)
 
 -- JOKERS PLANNED FOR ANOTHER UPDATE
 -- OBBLONGALE - Becomes "Angry" in boss blinds and returns all cards played to hand - Uncommon
@@ -195,6 +187,47 @@ SMODS.Joker {
         end
     end
 }
+
+SMODS.Joker {
+    key = "scam",
+    atlas = 'Jokers',
+    pos = { x = 1, y = 7 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 6,
+    config = { extra = { odds = 2 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { G.GAME.probabilities.normal or 1, card.ability.extra.odds } }
+    end,
+    calculate = function(self, card, context)
+        if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
+            if pseudorandom('balf_scam') < G.GAME.probabilities.normal / card.ability.extra.odds then
+                ease_dollars(0-G.GAME.dollars*0.5)
+            else
+                ease_dollars(G.GAME.dollars)
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "batpeg",
+    atlas = 'Jokers',
+    pos = { x = 2, y = 7 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 5,
+    config = { extra = { money = 4 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.money } }
+    end,
+    calculate = function(self, card, context)
+        if context.skip_blind and not context.blueprint then
+            ease_dollars(card.ability.extra.money)
+        end
+    end
+}
+
 
 SMODS.Joker {
     key = "chris",
@@ -1515,29 +1548,6 @@ SMODS.Joker {
         if context.setting_blind and G.jokers.cards[my_pos + 1] ~= nil and G.jokers.cards[my_pos - 1] ~= nil and not context.blueprint then
             G.jokers.cards[my_pos - 1]:start_dissolve()
             G.jokers.cards[my_pos + 1]:set_edition('e_balf_mother', true)
-        end
-    end
-}
-
--- JOKE
-
-SMODS.Joker {
-    key = "p_goblin",
-    atlas = 'Jokers',
-    pos = { x = 3, y = 1 },
-    rarity = 1,
-    blueprint_compat = true,
-    cost = -1,
-    config = { extra = { mult = -1 } },
-    loc_vars = function(self, info_queue, card)
-    return { vars = {card.ability.extra.mult} }
-    end,
-    calculate = function(self, card, context)
-        if context.cardarea == G.play and context.individual then
-            return { mult = card.ability.extra.mult,
-                    message = localize('k_pregnant'),
-                    colour = G.C.RED    
-                    }
         end
     end
 }

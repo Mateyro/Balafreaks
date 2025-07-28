@@ -1,7 +1,7 @@
 to_big = to_big or function(x) return x end
 
 -- 3
--- Debuffs JOKERS with editions
+-- Debuffs JOKERS with Motherized
 SMODS.Blind({
     key = 'mother',
     atlas = 'Blinds',
@@ -12,7 +12,7 @@ SMODS.Blind({
     boss_colour = HEX('BF10BC'),
     recalc_debuff = function(self, card, from_blind)
         for i = 1, #G.jokers.cards do
-            if G.jokers.cards[i].edition ~= nil then
+            if G.jokers.cards[i].edition == "e_balf_mother" then
                 G.jokers.cards[i]:set_debuff(true)
             end 
         end
@@ -45,7 +45,7 @@ SMODS.Blind({
     pos = {x = 0, y = 2},
     dollars = 5,
     mult = 2,
-    boss = {min = 1, max = 10},
+    boss = {min = 3, max = 10},
     boss_colour = HEX('16B275'),
     set_blind = function(self)
         for i = 1, #G.consumeables.cards do
@@ -95,7 +95,7 @@ SMODS.Blind({
     pos = {x = 0, y = 3},
     dollars = 5,
     mult = 2,
-    boss = {min = 1, max = 10},
+    boss = {min = 3, max = 10},
     boss_colour = HEX('5C7738'),
     config = {extra = {other = 0, odds = 4}},
     press_play = function(self)
@@ -124,7 +124,7 @@ SMODS.Blind({
     pos = {x = 0, y = 4},
     dollars = 7,
     mult = 5,
-    boss = {min = 1, max = 10},
+    boss = {min = 4, max = 10},
     boss_colour = HEX('A03280'),
     config = {extra = {cap = 0.5}},
     loc_vars = function(self, info_queue, card)
@@ -179,29 +179,30 @@ SMODS.Blind({
     atlas = 'Blinds',
     pos = {x = 0, y = 7},
     dollars = 5,
-    mult = 0.25,
+    mult = 1,
     boss = {min = 1, max = 10, showdown = true},
     boss_colour = HEX('565656'),
     loc_vars = function(self, info_queue, card)
     end,
     recalc_debuff = function(self, card, from_blind)
         for _, playing_card in ipairs(G.playing_cards) do
-            playing_card:set_debuff(true)
+            if pseudorandom('balf_disabled') < G.GAME.probabilities.normal / 2 then
+                playing_card:set_debuff(true)
+            end
         end
     end,
 })
 
 -- LETHAAAAL
 -- X4 base score requirement
--- 1 Hand
--- 0 Discards
+-- 1 Hands
 -- Also generates Random Scrap
 SMODS.Blind({
     key = 'eclipse',
     atlas = 'Blinds',
     pos = {x = 0, y = 8},
     dollars = 5,
-    mult = 4,
+    mult = 2,
     boss = {min = 1, max = 10, showdown = true},
     boss_colour = HEX('D9942F'),
     loc_vars = function(self, info_queue, card)
@@ -215,7 +216,6 @@ SMODS.Blind({
     end,
     set_blind= function(self)
         G.GAME.current_round.hands_left = 1
-        G.GAME.current_round.discards_left = 0
     end,
     drawn_to_hand = function(self)
 
@@ -242,7 +242,7 @@ SMODS.Blind({
     atlas = 'Blinds',
     pos = {x = 0, y = 9},
     dollars = 5,
-    mult = 5,
+    mult = 2,
     boss = {min = 1, max = 10, showdown = true},
     boss_colour = HEX('5C6165'),
     config = {extra = {switch = 0}},
@@ -255,7 +255,7 @@ SMODS.Blind({
     end,
     drawn_to_hand = function(self)
         if  self.config.extra.switch == 1 then
-            G.GAME.blind.chips = G.GAME.blind.chips *2
+            G.GAME.blind.chips = G.GAME.blind.chips *1.5
             G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
             G.GAME.blind:wiggle()
             self.config.extra.switch = 0

@@ -138,7 +138,7 @@ return {
                 }
             },
              j_balf_scary = {
-                name = 'Mister Scary',
+                name = 'mister scary.',
                 text = {
                     "{C:green}#1# in #2# chance{} to add {C:mult}+#3# Mult{}",
                     "to {C:attention}every card{} in the deck.",
@@ -149,7 +149,7 @@ return {
             j_balf_acecards = {
                 name = 'Ace of Cards',
                 text = {
-                    "Gains {X:mult,C:white}X0.1{} Mult per {C:attention}Ace in deck{}.",
+                    "Gains {X:mult,C:white}X#1#{} Mult per {C:attention}Ace in deck{}.",
                     "{C:inactive}(Currently{} {X:mult,C:white}X#3#{} {C:inactive}Mult){}"
                 }
             },
@@ -171,6 +171,13 @@ return {
                     "double your {C:money}money{}."
                 }
             },
+            j_balf_ai = {
+                name = 'Can i beat Balatro with an AI Girlfriend???',
+                text = {
+                    "{X:mult,C:white}X#1#{} Mult",
+                    "{C:attention}Force-selects{} 5 Cards",
+                }
+            },
             j_balf_ems = {
                 name = 'Ems',
                 text = {
@@ -182,7 +189,7 @@ return {
             j_balf_goblin = {
                 name = 'Greedy Goblin',
                 text = {
-                    "Gains {X:mult,C:white}X2{} Mult every {C:money}$1{} you have,",
+                    "Gains {X:mult,C:white}X3{} Mult every {C:money}$1{} you have,",
                     "Removes {C:attention}all{} of your {C:money}money{}",
                     "{X:mult,C:white}XMult{} Modifier gets",
                     "{C:attention}reset at end of the Ante{}.",
@@ -212,15 +219,15 @@ return {
                     "for your points to be",
                     "{C:attention}Chips^2 + Mult^2{} instead of",
                     "{C:attention}Chips x Mult.{}",
-                    "{s:0.6}(Also needs {C:money,s:0.6}upkeep{}{s:0.6}, if you don't have {}{C:money,s:0.6}$10{}{s:0.6} at the {}{C:attention,s:0.6}start of round{}{s:0.6}, {}",
-                    "{C:red,s:0.6}self destructs{}{s:0.6}){}",
+                    "{s:0.6}(Also needs {C:money,s:0.6}upkeep{}{s:0.6}, if you don't have {}{C:money,s:0.6}$4{}{s:0.6} at the {}{C:attention,s:0.6}start of round{}{s:0.6}, {}",
+                    "{C:red,s:0.6}self destructs{}{s:0.6}, takes 25% of your money otherwise){}",
                 }
             },
-            j_balf_sophie = {
-                name = 'The void speaks back.',
+            j_balf_charlie = {
+                name = 'Charlie',
                 text = {
                     "This Joker gains {C:mult}+#1# Mult{} per",
-                    "{C:spades}Queen of Spades{} in your deck.",
+                    "{C:diamonds}Queen of Diamonds{} in your deck.",
                     "{C:inactive}(Currently{} {C:mult}+#2# Mult{}{C:inactive}){}",
                 }
             },
@@ -253,6 +260,16 @@ return {
                 text = {
                     "Gives {C:mult}Mult{} equal to",
                     "{C:chips}Hands{} and {C:red}Discards{} left.",
+                }
+            },
+            j_balf_aids = {
+                name = 'Aids',
+                text = {
+                    "All {C:attention}listed{} {C:green}probabilities{}",
+                    "become {C:red}0{}.",
+                    "If you play your most",
+                    "played {C:attention}poker hand{} then",
+                    "{C:red}Self-Destructs{}.",
                 }
             },
             j_balf_myname = {
@@ -353,11 +370,18 @@ return {
                     "neighbouring cards.",
                 }
             },
+            j_balf_teeth = {
+                name = "Can of Teeth",
+                text = {
+                    "{C:red}+#1#{} Discards",
+                    "{C:red}-1{} Discards per {C:attention}Blind{} selected",
+                }
+            },
             j_balf_mother3 = {
                 name = "Mother 3",
                 text = {
                     "{V:1}Motherizes{} Joker to the {C:attention}Right{}",
-                    "Requires a {V:1}sacrifice{}...",
+                    "{V:1}Sacrifices{} the Joker to it's {C:attention}left{}",
                 }
             },
             j_balf_guwbi = {
@@ -368,7 +392,7 @@ return {
                     "If the timer ever reaches",
                     "{C:attention}3 Minutes{}, it {C:red}breaks{}.",
                     "Gains {X:dark_edition,C:white}^0.25{} Chips and",
-                    "Timer {C:attention}looses a minute{} per",
+                    "Timer {C:attention}loses a minute{} per",
                     "{C:attention}Boss Blind{} beaten while",
                     "the timer is {C:attention}intact{}.",
                     "{C:inactive}(Currently{} {X:dark_edition,C:white}^#4#{} {C:inactive}Chips){}",
@@ -379,7 +403,23 @@ return {
                 name = 'Greg',
                 text = {
                     "Generates a {V:1}Goop Card{}",
-                    "when boss {C:attention}blind{} is selected.",
+                    "when {C:attention}blind{} is selected.",
+                }
+            },
+            j_balf_maxdesignpro = {
+                name = 'MaxDesignPro',
+                text = {
+                    "When {C:attention}clicked{}, gains {C:chips}+#2#{} Chips",
+                    "{C:inactive}(Currently{} {C:chips}+#1#{} {C:inactive}Chips){}",
+                }
+            },
+            j_balf_waveify = {
+                name = 'Waveify',
+                text = {
+                    "When {C:attention}Blind{} is selected,",
+                    "{C:attention}Destroys{} Joker to it's {C:attention}Right{},",
+                    "Gives {C:money}Dollars{} equal to {C:white,X:money}X3{} the",
+                    "sell value of the Joker destroyed.",
                 }
             },
             j_balf_tyronne = {
@@ -405,7 +445,7 @@ return {
         bl_balf_mother = {
                 name = "The Mother",
                 text = {
-                    "Debuffs all Jokers with Editions",
+                    "Debuffs all Jokers with Motherized",
                 }
             },
         bl_balf_greedy = {
@@ -443,6 +483,7 @@ return {
                 name = "The Station",
                 text = {
                     "Maybe it was all a dream...",
+                    "-1 Ante when beat.",
                 }
             },
         bl_balf_twirl = {
@@ -457,14 +498,14 @@ return {
                 text = {
                     "Wait a minute...",
                     "this isn't Sans Francisco.",
-                    "All playing cards disabled.",
+                    "1 in 2 Chance to disable any",
+                    "playing card in your hand.",
                 }
             },
         bl_balf_eclipse = {
                 name = "Eclipsed Moon",
                 text = {
                     "Hands set to 1.",
-                    "Discards set to 0.",
                     "Adds Scrap cards to Deck",
                     "every time a Hand is drawn.",
                 }
@@ -472,7 +513,7 @@ return {
         bl_balf_elevator = {
                 name = "Falling Elevator",
                 text = {
-                    "X2 Base chips every",
+                    "X1.5 Base chips every",
                     "hand the Blind isn't beat",
                 }
             },
@@ -481,7 +522,8 @@ return {
 			m_balf_frozen = {
 				name = "Frozen Card",
 				text = {"{X:mult,C:white}X#1# {} Mult",
-						"Destroyed if played",
+						"{C:green}#3# in #2# chance{} to destroy",
+                        "itself when played.",
 				}
 			},
             m_balf_goop = {

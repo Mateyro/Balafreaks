@@ -1,10 +1,8 @@
 -- NEW JOKERS TO BE ADDED NEXT UPDATE
--- MaxDesignPro - hit that Help Me! to give +1 chip to this card - Uncommon
 -- Two Gravity Hammers - If a pair of Clubs is played, multiplies XMult by 1.25 - Rare
--- Waveify - Destroys Joker to it's right, gives you dollars equal to X3 the Sell value of the card destroyed. - Uncommon
--- CAN I BEAT BALATRO WITH AN AI - Auto-selects 5 cards, x3 Mult - Uncommon
+-- Waveify - Destroys Joker to it's right, gives you dollars equal to X3 the Sell value of the card destroyed. - Common
 
--- Hackbetals Recode
+-- Tanaka Food Rework
 
 -- JOKERS PLANNED FOR ANOTHER UPDATE
 -- OBBLONGALE - Becomes "Angry" in boss blinds and returns all cards played to hand - Uncommon
@@ -228,6 +226,104 @@ SMODS.Joker {
     end
 }
 
+SMODS.Joker {
+    key = "ai",
+    atlas = 'Jokers',
+    pos = { x = 3, y = 7 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 4,
+    config = { extra = { xmult = 4 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            return { Xmult_mod = card.ability.extra.xmult,
+                    message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.xmult } } 
+                }
+        end
+        if context.setting_blind then
+			if G.GAME.blind.name == 'Cerulean Bell' then -- disables cerulean bell to avoid conflict
+				G.GAME.blind:disable()
+			end
+		end
+        if context.first_hand_drawn and not context.blueprint then
+			G.E_MANAGER:add_event(Event({
+				func = function() 
+					card:juice_up(0.8, 0.5)
+					local any_forced = nil
+					for k, v in ipairs(G.hand.cards) do
+						if v.ability.forced_selection then
+							any_forced = true
+						end
+					end
+					if not any_forced then 
+						G.hand:unhighlight_all()
+                        local i = 1
+                        while i < 6 do
+                            local yourcards = {}
+                            for  k, v in pairs(G.hand.cards) do
+                                if not v.ability.forced_selection then
+                                    table.insert(yourcards, v)
+                                end
+                            end
+                            local cardforce = pseudorandom_element(yourcards, pseudoseed('random_force'))
+                            cardforce.ability.forced_selection = true
+                            G.hand:add_to_highlighted(cardforce)
+                            i = i+1
+                        end
+					end
+				return true
+			end}))
+		end
+		if (context.after or context.pre_discard) and #G.hand.cards > 0 and not context.blueprint then
+			G.E_MANAGER:add_event(  -- Thanks WilsontheWolf apparently
+				Event({
+					trigger = "after",
+					delay = 0.2,
+					func = function()
+						if G.STATE ~= G.STATES.SELECTING_HAND then
+							return false
+						end
+						G.STATE = G.STATES.HAND_PLAYED
+						G.STATE_COMPLETE = true
+							G.E_MANAGER:add_event(Event({
+								func = function() 
+									local any_forced = nil
+					for k, v in ipairs(G.hand.cards) do
+						if v.ability.forced_selection then
+							any_forced = true
+						end
+					end
+					if not any_forced then 
+						G.hand:unhighlight_all()
+                        local i = 1
+                        while i < 6 do
+                            local yourcards = {}
+                            for  k, v in pairs(G.hand.cards) do
+                                if not v.ability.forced_selection then
+                                    table.insert(yourcards, v)
+                                end
+                            end
+                            local cardforce = pseudorandom_element(yourcards, pseudoseed('random_force'))
+                            cardforce.ability.forced_selection = true
+                            G.hand:add_to_highlighted(cardforce)
+                            i = i+1
+                        end
+					end
+				return true
+				end}))
+		    	G.STATE = G.STATES.SELECTING_HAND
+				card:juice_up(0.8, 0.5)
+			return true
+	    	end,
+		}),
+		"other")
+		end
+    end
+}
+-- code is a modified version from buffoonery's partonizing joker since it's essentially the same exact functionality, thank PinkMaggit for this one
 
 SMODS.Joker {
     key = "chris",
@@ -241,6 +337,102 @@ SMODS.Joker {
             return {
                 mult = (G.GAME.current_round.discards_left + G.GAME.current_round.hands_left)
             }
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "maxdesignpro",
+    atlas = 'Jokers',
+    pos = { x = 5, y = 7 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 5,
+    config = { extra = { chips = 0, chipgain = 0.1 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.chips, card.ability.extra.chipgain } }
+    end,
+    calculate = function(self, card, context)
+        if context.balf_press then
+            if card.states.hover.is == true then
+                card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chipgain
+                card:juice_up(0.2,0.6)
+            end
+        end
+        if context.joker_main then
+            return{
+                chips = card.ability.extra.chips
+            }
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "waveify",
+    atlas = 'Jokers',
+    pos = { x = 6, y = 7 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 5,
+    calculate = function(self, card, context)
+        if context.setting_blind and not context.blueprint then
+            local my_pos = nil
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then
+                    my_pos = i
+                    break
+                end
+            end
+            if my_pos and G.jokers.cards[my_pos + 1] and not G.jokers.cards[my_pos + 1].ability.eternal and not G.jokers.cards[my_pos + 1].getting_sliced then
+                local sliced_card = G.jokers.cards[my_pos + 1]
+                sliced_card.getting_sliced = true
+                G.GAME.joker_buffer = G.GAME.joker_buffer - 1
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.GAME.joker_buffer = 0
+                        ease_dollars(sliced_card.sell_cost * 3)
+                        card:juice_up(0.8, 0.8)
+                        sliced_card:start_dissolve({ HEX("57ecab") }, nil, 1.6)
+                        play_sound('slice1', 0.96 + math.random() * 0.08)
+                        return true
+                    end
+                }))
+                return {
+                    message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.mult + 2 * sliced_card.sell_cost } },
+                    colour = G.C.RED,
+                    no_juice = true
+                }
+            end
+        end
+    end
+}
+
+SMODS.Joker {
+    key = "teeth",
+    atlas = 'Jokers',
+    pos = { x = 4, y = 7 },
+    rarity = 1,
+    blueprint_compat = true,
+    cost = 5,
+    config = { extra = { discard = 3, remove = false } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.discard } }
+    end,
+    calculate = function(self, card, context)
+        if context.setting_blind then
+            G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.extra.discard
+            ease_discard(card.ability.extra.discard)
+            if card.ability.extra.discard < 0 then
+                card.ability.extra.remove = true
+            end
+        end
+        if context.end_of_round and context.game_over == false then
+            G.GAME.round_resets.discards = G.GAME.round_resets.discards - (card.ability.extra.discard)
+            ease_discard(-(card.ability.extra.discard))
+            card.ability.extra.discard = card.ability.extra.discard-1
+            if card.ability.extra.remove == true then
+                card:start_dissolve()
+            end
         end
     end
 }
@@ -269,10 +461,92 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
+    key = "walter",
+    atlas = 'Jokers',
+    pos = { x = 1, y = 6 },
+    rarity = 1,
+    blueprint_compat = false,
+    cost = 5,
+    calculate = function(self, card, context)
+        if context.check_enhancement then
+            if context.other_card.base.suit == "Clubs" then
+                return {m_lucky = true}
+            end
+        end
+    end
+}
+
+-- UNCOMMON
+
+balf.probablityStorage = {}
+
+SMODS.Joker {
+    key = "aids",
+    atlas = 'Jokers',
+    pos = { x = 3, y = 1 },
+    rarity = 2,
+    blueprint_compat = true,
+    cost = 6,
+    add_to_deck = function(self, card, from_debuff)
+        for k, v in pairs(G.GAME.probabilities) do
+            balf.probablityStorage[k] = G.GAME.probabilities[k]
+            G.GAME.probabilities[k] = 0
+        end
+    end,
+    remove_from_deck = function(self, card, from_debuff)
+        for k, v in pairs(G.GAME.probabilities) do
+            G.GAME.probabilities[k] = balf.probablityStorage[k]
+            if G.GAME.probabilities[k] == nil then G.GAME.probabilities[k] = 1 end
+        end
+    end,
+    calculate = function(self, card, context)
+        if context.before and context.main_eval and not context.blueprint then
+            local destroy = true
+            local play_more_than = (G.GAME.hands[context.scoring_name].played or 0)
+            for k, v in pairs(G.GAME.hands) do
+                if k ~= context.scoring_name and v.played >= play_more_than and v.visible then
+                    destroy = false
+                    break
+                end
+            end
+            if destroy then
+                card:start_dissolve()
+            end
+        end
+    end,
+}
+
+SMODS.Joker {
+    key = "richard",
+    atlas = 'Jokers',
+    pos = { x = 2, y = 6 },
+    rarity = 2,
+    blueprint_compat = false,
+    cost = 5,
+    calculate = function(self, card, context)
+         if context.before and context.main_eval and G.GAME.current_round.hands_played == 0 and #context.full_hand == 1 then
+            local cc = 0
+            while cc < 3 do
+                G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+                local copy_card = copy_card(context.full_hand[1], nil, nil, G.playing_card)
+                copy_card:add_to_deck()
+                G.deck.config.card_limit = G.deck.config.card_limit + 1
+                table.insert(G.playing_cards, copy_card)
+                G.hand:emplace(copy_card)
+                copy_card.states.visible = nil
+                cc = cc+1
+                copy_card:start_materialize()
+            end
+            card:start_dissolve()
+        end
+    end
+}
+
+SMODS.Joker {
     key = "greg",
     atlas = 'Jokers',
     pos = { x = 3, y = 4 },
-    rarity = 1,
+    rarity = 2,
     blueprint_compat = true,
     cost = 4,
     loc_vars = function(self, info_queue, card)
@@ -307,50 +581,6 @@ SMODS.Joker {
     end
 }
 
-SMODS.Joker {
-    key = "walter",
-    atlas = 'Jokers',
-    pos = { x = 1, y = 6 },
-    rarity = 1,
-    blueprint_compat = false,
-    cost = 5,
-    calculate = function(self, card, context)
-        if context.check_enhancement then
-            if context.other_card.base.suit == "Clubs" then
-                return {m_lucky = true}
-            end
-        end
-    end
-}
-
-SMODS.Joker {
-    key = "richard",
-    atlas = 'Jokers',
-    pos = { x = 2, y = 6 },
-    rarity = 1,
-    blueprint_compat = false,
-    cost = 5,
-    calculate = function(self, card, context)
-         if context.before and context.main_eval and G.GAME.current_round.hands_played == 0 and #context.full_hand == 1 then
-            local cc = 0
-            while cc < 3 do
-                G.playing_card = (G.playing_card and G.playing_card + 1) or 1
-                local copy_card = copy_card(context.full_hand[1], nil, nil, G.playing_card)
-                copy_card:add_to_deck()
-                G.deck.config.card_limit = G.deck.config.card_limit + 1
-                table.insert(G.playing_cards, copy_card)
-                G.hand:emplace(copy_card)
-                copy_card.states.visible = nil
-                cc = cc+1
-                copy_card:start_materialize()
-            end
-            card:start_dissolve()
-        end
-    end
-}
-
--- UNCOMMON
-
 
 SMODS.Joker {
     key = "acecards",
@@ -359,7 +589,7 @@ SMODS.Joker {
     rarity = 2,
     blueprint_compat = true,
     cost = 5,
-    config = { extra = { xmultbase = 1, xmult = 0.1 } },
+    config = { extra = { xmultbase = 1, xmult = 0.25 } },
     loc_vars = function(self, info_queue, card)
         local ace_tally = 0
         if G.playing_card then
@@ -532,77 +762,6 @@ SMODS.Joker {
 -- this was the first coded joker i cannot believe this shit took so long looking back at it
 
 SMODS.Joker {
-    key = "sienna",
-    atlas = 'Jokers',
-    pos = { x = 1, y = 0 },
-    rarity = 2,
-    blueprint_compat = true,
-    cost = 5,
-    config = { extra = { suit = 'Hearts'} },
-    loc_vars = function(self, info_queue, card)
-        return { vars = { localize(card.ability.extra.suit, 'suits_singular') } }
-    end,
-    calculate = function(self, card, context)
-        if context.joker_main and G.GAME.current_round.hands_played == 0 and next(context.poker_hands["Flush"]) and
-        context.poker_hands["Flush"][1][1]:is_suit((card.ability.extra.suit)) then
-            if context.scoring_name == 'Flush Five' then
-                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-                    G.E_MANAGER:add_event(Event({
-                        func = (function()
-                        SMODS.add_card {
-                            set = 'Tarot',
-                            key = 'c_fool',
-                            edition = 'e_negative',
-                        }
-                        SMODS.add_card {
-                            set = 'Tarot',
-                            key = 'c_fool',
-                            edition = 'e_negative',
-                        }
-                        G.GAME.consumeable_buffer = 0
-                        return true
-                    end)
-                    }))
-                return {
-                    message = localize('k_plus_tarot'),
-                    colour = G.C.SECONDARY_SET.Tarot,
-                    remove = true
-                    }
-            elseif #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-                G.E_MANAGER:add_event(Event({
-                    func = (function()
-                    SMODS.add_card {
-                        set = 'Tarot',
-                        key = 'c_fool'
-                    }
-                    G.GAME.consumeable_buffer = 0
-                    return true
-                    end)
-                }))
-                return {
-                    message = localize('k_plus_tarot'),
-                    colour = G.C.SECONDARY_SET.Tarot,
-                    remove = true
-                }
-                end
-            end
-    end
-}
-
--- SHOUTOUT TO THIS N GUY ON THE BALATRO DISCORD SERVER, was gonna fully use his code but it wasnt really compatible with all the pizzazz i needed
--- i did tho however take the context.poker_hands flush method which while it's a nerf to sienna it GREATLY helps coding this bs, thing below is something i tested containing his code.
-
---    calculate = function(self, card, context)
---        if context.joker_main and next(context.poker_hands["Flush"]) and context.poker_hands["Flush"][1][1]:is_suit("Hearts") and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and G.GAME.current_round.hands_played == 0 then
- --           SMODS.add_card{key="c_fool", edition = next(context.poker_hands["Flush Five"]) and "e_negative" or nil}
-  --          G.GAME.consumeable_buffer = 0
-   --         return {message = localize('k_plus_tarot'), colour = G.C.SECONDARY_SET.Tarot, remove = true}
-    --    end
-     -- end
-
-
-SMODS.Joker {
     key = "tanaka",
     atlas = 'Jokers',
     pos = { x = 1, y = 1 },
@@ -755,13 +914,13 @@ SMODS.Joker {
 -- code above this is a sin, if i touch anything it breaks, so i may as well leave that mess be as it WORKS somehow.
 
 SMODS.Joker {
-    key = "sophie",
+    key = "charlie",
     atlas = 'Jokers',
     pos = { x = 3, y = 2 },
     rarity = 2,
     blueprint_compat = true,
     cost = 4,
-    config = { extra = { mult = 8, suit = 'Spades' } },
+    config = { extra = { mult = 8, suit = 'Diamonds' } },
     loc_vars = function(self, info_queue, card)
         local queen_tally = 0
         if G.playing_card then
@@ -937,6 +1096,76 @@ SMODS.Joker {
 -- comically small joker lmao
 
 SMODS.Joker {
+    key = "sienna",
+    atlas = 'Jokers',
+    pos = { x = 1, y = 0 },
+    rarity = 3,
+    blueprint_compat = true,
+    cost = 5,
+    config = { extra = { suit = 'Hearts'} },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { localize(card.ability.extra.suit, 'suits_singular') } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main and G.GAME.current_round.hands_played == 0 and next(context.poker_hands["Flush"]) and
+        context.poker_hands["Flush"][1][1]:is_suit((card.ability.extra.suit)) then
+            if context.scoring_name == 'Flush Five' then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    G.E_MANAGER:add_event(Event({
+                        func = (function()
+                        SMODS.add_card {
+                            set = 'Tarot',
+                            key = 'c_fool',
+                            edition = 'e_negative',
+                        }
+                        SMODS.add_card {
+                            set = 'Tarot',
+                            key = 'c_fool',
+                            edition = 'e_negative',
+                        }
+                        G.GAME.consumeable_buffer = 0
+                        return true
+                    end)
+                    }))
+                return {
+                    message = localize('k_plus_tarot'),
+                    colour = G.C.SECONDARY_SET.Tarot,
+                    remove = true
+                    }
+            elseif #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                G.E_MANAGER:add_event(Event({
+                    func = (function()
+                    SMODS.add_card {
+                        set = 'Tarot',
+                        key = 'c_fool'
+                    }
+                    G.GAME.consumeable_buffer = 0
+                    return true
+                    end)
+                }))
+                return {
+                    message = localize('k_plus_tarot'),
+                    colour = G.C.SECONDARY_SET.Tarot,
+                    remove = true
+                }
+                end
+            end
+    end
+}
+
+-- SHOUTOUT TO THIS N GUY ON THE BALATRO DISCORD SERVER, was gonna fully use his code but it wasnt really compatible with all the pizzazz i needed
+-- i did tho however take the context.poker_hands flush method which while it's a nerf to sienna it GREATLY helps coding this bs, thing below is something i tested containing his code.
+
+--    calculate = function(self, card, context)
+--        if context.joker_main and next(context.poker_hands["Flush"]) and context.poker_hands["Flush"][1][1]:is_suit("Hearts") and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and G.GAME.current_round.hands_played == 0 then
+ --           SMODS.add_card{key="c_fool", edition = next(context.poker_hands["Flush Five"]) and "e_negative" or nil}
+  --          G.GAME.consumeable_buffer = 0
+   --         return {message = localize('k_plus_tarot'), colour = G.C.SECONDARY_SET.Tarot, remove = true}
+    --    end
+     -- end
+
+SMODS.Joker {
     key = "zero",
     atlas = 'Jokers',
     pos = { x = 2, y = 0 },
@@ -1007,20 +1236,48 @@ SMODS.Joker {
     rarity = 3,
     blueprint_compat = false,
     cost = 11,
-    config = { extra = { chips = 2 } },
+    config = { extra = { squared = 2 } },
     loc_vars = function(self, info_queue, card)
-    return { vars = {card.ability.extra.chips} }
+    return { vars = {card.ability.extra.squared} }
     end,
+    add_to_deck = function(self, card, from_debuff)
+		balf.HackbOperator.op = 1
+        balf.HackbOperator.symb = "+"
+        fixoperator()
+	end,
+    remove_from_deck = function(self, card, from_debuff)
+		balf.HackbOperator.op = 0
+        balf.HackbOperator.symb = "X"
+        fixoperator()
+	end,
     calculate = function(self, card, context)
         if context.final_scoring_step and not context.blueprint then
-            card.ability.extra.chips = ((hand_chips^2)+(mult^2))-hand_chips
-            mult = 1
-            return { chip_mod = card.ability.extra.chips,
-                message = localize('k_hackb'),
-                }
+            return {
+				message = localize({
+					type = "variable",
+					key = "k_powmult",
+					vars = {
+						number_format(card.ability.extra.squared),
+					},
+				}),
+				Emult_mod = card.ability.extra.squared,
+				colour = G.C.DARK_EDITION,
+                message = localize({
+                    type = "variable",
+                    key = "k_powchips",
+                    vars = {
+                        number_format(card.ability.extra.squared),
+                    },
+                }),
+                Echip_mod = card.ability.extra.squared,
+                colour = G.C.DARK_EDITION,
+			}
         elseif context.setting_blind and not context.blueprint then
-            if to_big(G.GAME.dollars) > to_big(9) then
-                return { dollars = -10 }
+            if to_big(G.GAME.dollars) > to_big(3) then
+                balf.HackbOperator.op = 1
+                balf.HackbOperator.symb = "+"
+                fixoperator()
+                ease_dollars(-(G.GAME.dollars/4))
             else
                 return {
 				    message = localize('k_hackb_d'),
@@ -1165,7 +1422,7 @@ SMODS.Joker {
     rarity = 4,
     blueprint_compat = true,
     cost = 25,
-    config = { extra = { emult = 1, emult_gain = 0.3, parry = 1 } },
+    config = { extra = { emult = 1, emult_gain = 0.25, parry = 1 } },
     loc_vars = function(self, info_queue, card)
     return { vars = {card.ability.extra.emult, card.ability.extra.emult_gain, card.ability.extra.parry} }
     end,
@@ -1279,7 +1536,8 @@ SMODS.Joker {
                 card.ability.extra.echips = card.ability.extra.echips +0.25
                 card.ability.extra.minutes = card.ability.extra.minutes -1
             end
-        elseif context.joker_main then
+        end
+        if context.joker_main then
             return {
                 message = localize({
                     type = "variable",
@@ -1545,7 +1803,7 @@ SMODS.Joker {
                 break
             end
         end
-        if context.setting_blind and G.jokers.cards[my_pos + 1] ~= nil and G.jokers.cards[my_pos - 1] ~= nil and not context.blueprint then
+        if context.setting_blind and G.jokers.cards[my_pos + 1] ~= nil and G.jokers.cards[my_pos - 1] ~= nil and G.jokers.cards[my_pos + 1].edition ~= "e_balf_mother" and not context.blueprint then
             G.jokers.cards[my_pos - 1]:start_dissolve()
             G.jokers.cards[my_pos + 1]:set_edition('e_balf_mother', true)
         end

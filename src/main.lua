@@ -29,11 +29,11 @@ SMODS.Atlas({
 })
 
  -- i forgot why i put this here but i think its important
-if not Balafreaks then
-	Balafreaks = {}
+if not balf then
+	balf = {}
 end
 
-Balafreaks.colours = {
+balf.colours = {
 	rainRed = HEX("FF0000"),
         rainOra = HEX("FF6A00"),
         rainYel = HEX("FFD800"),
@@ -44,7 +44,7 @@ Balafreaks.colours = {
         toucheded = HEX("7A5FCE"),
 }
 
-Balafreaks.colours.rainbow = SMODS.Gradient({
+balf.colours.rainbow = SMODS.Gradient({
     key = 'rainbow',
     colours = {
         HEX("FF0000"),
@@ -129,10 +129,43 @@ SMODS.current_mod.optional_features = {
 SMODS.Rarity({
 	key = "unclearvar",
 	loc_txt = {},
-	badge_colour = Balafreaks.colours.rainbow,
+	badge_colour = balf.colours.rainbow,
 })
 
 SMODS.Sound{
     key = "mynameis",
     path = "mynameis.ogg",
 }
+
+balf.HackbOperator = {}
+balf.HackbOperator.op = balf.HackbOperator.op or 0
+balf.HackbOperator.symb = balf.HackbOperator.symb or "X"
+
+function balf.getscore(hand_chips, mult)
+  if balf.HackbOperator.op == 0 then 
+    return to_big(hand_chips)*to_big(mult)
+    else if balf.HackbOperator.op == 1 then 
+      return to_big(hand_chips)+to_big(mult)
+    end
+  end
+end
+
+function fixoperator()
+  local fix = G.HUD:get_UIE_by_ID('opUI')
+  if fix then
+    fix.config.text = balf.HackbOperator.symb
+    fix.config.text_drawable:set(balf.HackbOperator.symb)
+    fix.UIBox:recalculate()
+  end
+end
+
+-- thanks Astronomica fo the inspiration
+
+local lcpref = Controller.L_cursor_press
+function Controller:L_cursor_press(x, y)
+    lcpref(self, x, y)
+    if G and G.jokers and G.jokers.cards and not G.SETTINGS.paused then
+        SMODS.calculate_context({ balf_press = true })
+    end
+end
+-- Thanks Cryptid for the code, unironically could've done this myself but i'm lazy rn :P

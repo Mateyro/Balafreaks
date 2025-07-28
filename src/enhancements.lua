@@ -4,14 +4,14 @@ SMODS.Enhancement {
     key = 'frozen',
     atlas = 'Enhancements',
     pos = { x = 0, y = 0 },
-    config = { x_mult = 3 },
+    config = { x_mult = 4, odds = 1 },
     shatters = true,
     weight = 0,
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.x_mult } }
+        return { vars = { card.ability.x_mult, card.ability.odds, G.GAME.probabilities.normal or 1 } }
     end,
     calculate = function(self, card, context)
-        if context.cardarea == G.play and context.destroy_card == card then
+        if context.cardarea == G.play and context.destroy_card == card and pseudorandom('balf_frozen') < G.GAME.probabilities.normal / card.ability.odds then
             return { remove = true }
         end
     end

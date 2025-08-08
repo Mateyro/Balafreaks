@@ -182,12 +182,14 @@ SMODS.Blind({
     mult = 1,
     boss = {min = 1, max = 10, showdown = true},
     boss_colour = HEX('565656'),
+    config = {extra = {odds = 2}},
     loc_vars = function(self, info_queue, card)
     end,
     recalc_debuff = function(self, card, from_blind)
         for _, playing_card in ipairs(G.playing_cards) do
-            if pseudorandom('balf_disabled') < G.GAME.probabilities.normal / 2 then
-                playing_card:set_debuff(true)
+            playing_card:set_debuff(true)
+            if pseudorandom('balf_disabled') < G.GAME.probabilities.normal / self.config.extra.odds then
+                playing_card:set_debuff(false)
             end
         end
     end,
@@ -206,13 +208,6 @@ SMODS.Blind({
     boss = {min = 1, max = 10, showdown = true},
     boss_colour = HEX('D9942F'),
     loc_vars = function(self, info_queue, card)
-    end,
-    recalc_debuff = function(self, card, from_blind)
-        for i = 1, #G.jokers.cards do
-            if G.jokers.cards[i].edition ~= nil then
-                G.jokers.cards[i]:set_debuff(true)
-            end 
-        end
     end,
     set_blind= function(self)
         G.GAME.current_round.hands_left = 1

@@ -8,7 +8,7 @@
   "main_file": "Balafreaks.lua",
   "priority": 0,
   "badge_colour": "460303",
-  "version": "1.3.6",
+  "version": "1.4.1",
   "dependencies": [
     "Steamodded (>=1.0.0~ALPHA-1217b)",
     "Talisman (>=2.0.9)"

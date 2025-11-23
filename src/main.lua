@@ -28,6 +28,13 @@ SMODS.Atlas({
     py = 34
 })
 
+SMODS.Atlas {
+    key = "modicon",
+    path = "icon.png",
+    px = 34,
+    py = 34
+}
+
  -- i forgot why i put this here but i think its important
 if not balf then
 	balf = {}
@@ -137,30 +144,6 @@ SMODS.Sound{
     path = "mynameis.ogg",
 }
 
-balf.HackbOperator = {}
-balf.HackbOperator.op = balf.HackbOperator.op or 0
-balf.HackbOperator.symb = balf.HackbOperator.symb or "X"
-
-function balf.getscore(hand_chips, mult)
-  if balf.HackbOperator.op == 0 then 
-    return to_big(hand_chips)*to_big(mult)
-    else if balf.HackbOperator.op == 1 then 
-      return to_big(hand_chips)+to_big(mult)
-    end
-  end
-end
-
-function fixoperator()
-  local fix = G.HUD:get_UIE_by_ID('opUI')
-  if fix then
-    fix.config.text = balf.HackbOperator.symb
-    fix.config.text_drawable:set(balf.HackbOperator.symb)
-    fix.UIBox:recalculate()
-  end
-end
-
--- thanks Astronomica fo the inspiration
-
 local lcpref = Controller.L_cursor_press
 function Controller:L_cursor_press(x, y)
     lcpref(self, x, y)
@@ -169,3 +152,28 @@ function Controller:L_cursor_press(x, y)
     end
 end
 -- Thanks Cryptid for the code, unironically could've done this myself but i'm lazy rn :P
+
+-- inspired from paperback code very much thank you for the basis of this since i did NOT realize "G.CONTROLLER.locks.selling_card" was a thing
+-- Add new context that happens after destroying jokers
+local remove_ref = Card.remove
+function Card.remove(self)
+  -- Check that the card being removed is a joker that's in the player's deck and that it's not being sold
+  if self.added_to_deck and self.ability.set == 'Joker' and not G.CONTROLLER.locks.selling_card then
+    balf.lastSliced = self
+    SMODS.calculate_context({
+      balf = {
+        destroying_joker = true,
+        destroyed_joker = self
+      }
+    })
+  end
+  if self.added_to_deck and self.ability.set == 'Joker' and G.CONTROLLER.locks.selling_card then
+    balf.lastSold = self
+    SMODS.calculate_context({
+      balf = {
+        joker_sold = true,
+      }
+    })
+  end
+  return remove_ref(self)
+end

@@ -13,10 +13,12 @@ return {
             k_ems = { "Touched!" },
             k_ems_d = { "Denied!" },
             k_frost = { "Frozen!" },
+            k_gummies = { "Shoved!" },
             k_hackb = { "Pythagoras!" },
             k_hackb_d = { "Poor!" },
             k_balf_unclearvar = "Color Variant",
             k_plus_goop = { "Gooped!" },
+            k_togore = { "Togoretastic." },
         },
         labels = {
             k_plus_goop = "Gooped!",
@@ -42,8 +44,6 @@ return {
                     "Creates a {C:tarot}The Fool{} card if",
                     "hand played is a flush consisting of {C:hearts}hearts{}.",
                     "Only works on the first hand played.",
-                    "{s:0.75}(If hand contains a Flush five consisting of only{} {C:hearts,s:0.75}Hearts{}",
-                    "{s:0.75}create 2 Negative {C:dark_edition,s:0.75}The Fool{} {s:0.75}consumeables){}",
                 }
             },
             j_balf_frost = {
@@ -53,11 +53,28 @@ return {
                     "{C:blue,E:2}Frozen{} Cards",
                 }
             },
+            j_balf_togore = {
+                name = 'Togore Dreamer',
+                text = {
+                    "If {C:attention}Last Played Hand{} of",
+                    "the {C:attention}Blind{} is {C:planet}High Card{}",
+                    "then give {C:attention}#1#{} Free {C:green}Rerolls{}",
+                }
+            },
+            j_balf_gflash = {
+                name = 'Green Flash',
+                text = {
+                    "If hand contains both {C:clubs}Clubs{}",
+                    "and {C:diamonds}Diamonds{}, {C:attention}Retrigger{}",
+                    "all {C:clubs}Clubs{} and {C:diamonds}Diamonds{}",
+                }
+            },
             j_balf_tanaka = {
                 name = 'Tanaka',
                 text = {
-                    "Copies food Joker to it's right.",
-                    "Effect copied is {C:balf_rainbow}buffed{}.",
+                    "If a {C:attention}food{} Joker",
+                    "is {C:red}destroyed{},",
+                    "{C:balf_rainbow}Absorb{} it's effect.",
                 }
             },
             j_balf_zero = {
@@ -226,9 +243,16 @@ return {
             j_balf_charlie = {
                 name = 'Charlie',
                 text = {
-                    "This Joker gains {C:mult}+#1# Mult{} per",
-                    "{C:diamonds}Queen of Diamonds{} in your deck.",
-                    "{C:inactive}(Currently{} {C:mult}+#2# Mult{}{C:inactive}){}",
+                    "This Joker gives {C:mult}+#1# Mult{} for each",
+                    "{C:clubs}Club{} card you play, also",
+                    "{C:red}Destroys{} the {C:clubs}Club{} card.",
+                }
+            },
+            j_balf_neighbour = {
+                name = 'Hello Neighbour',
+                text = {
+                    "Randomly retriggers Joker",
+                    "to it's right or left",
                 }
             },
             j_balf_kade = {
@@ -262,14 +286,108 @@ return {
                     "{C:chips}Hands{} and {C:red}Discards{} left.",
                 }
             },
+            j_balf_check_it = {
+                name = 'Check It',
+                text = {
+                    "{C:green}#1# in #2# chance{} to give {X:mult,C:white}X#3#{} Mult",
+                    "If {C:green}chance{} is {C:red}failed{} then {X:mult,C:white}X#4#{} Mult",
+                }
+            },
+            j_balf_toucher = {
+                name = 'The Toucher',
+                text = {
+                    "{C:attention}Sell{} to {V:1}Touch{}",
+                    "the Joker to it's {C:attention}right{}.",
+                }
+            },
+            j_balf_starwalker = {
+                name = 'The Original       Starwalker',
+                text = {
+                    "Retriggers all cards with",
+                    "a        {C:diamonds}Diamond{} suit.",
+                }
+            },
+            j_balf_logspam = {
+                name = 'Log Spam',
+                text = {
+                    "{C:attention}Plank{} Cards now",
+                    "also give {X:chips,C:white}X#1#{} Chips.",
+                }
+            },
+            j_balf_gaster = {
+                name = 'W.D. Gaster',
+                text = {
+                    "Every {C:attention}#2#{} cards played,",
+                    "gains {C:mult}+#3# Mult{}.",
+                    "{C:inactive}(Currently {}{C:mult}+#1# Mult{}{C:inactive}){}",
+                }
+            },
             j_balf_aids = {
                 name = 'Aids',
                 text = {
                     "All {C:attention}listed{} {C:green}probabilities{}",
                     "become {C:red}0{}.",
-                    "If you play your most",
-                    "played {C:attention}poker hand{} then",
-                    "{C:red}Self-Destructs{}.",
+                    "If you don't beat a",
+                    "non-{C:attention}boss blind{} in {C:attention}one{}",
+                    "hand, then {C:red}Self-Destructs{}.",
+                }
+            },
+            j_balf_grilled = {
+                name = 'Space-Time Warping Grilled Cheese',
+                text = {
+                    "Once {C:attention}Boss Blind{} is defeated",
+                    "{C:green}#1# in #2# chance{} to {C:red}Self-Destruct{}",
+                    "and {C:attention}warp{} you back an {C:attention}Ante{}",
+                }
+            },
+            j_balf_grimace = {
+                name = 'Pregnant Grimace Water Bottle',
+                text = {
+                    "Each {C:attention}Discarded card{} permanently gains",
+                    "{C:chips}+#1#{} chips, chips gained increases",
+                    "by {C:chips}+#2#{} each blind defeated.",
+                    "{C:red}Self-Destructs{} when it",
+                    "reaches {C:chips}+60{} chips",
+                }
+            },
+            j_balf_surprise = {
+                name = 'Surprise Milk Attack',
+                text = {
+                    "Gives {X:mult,C:white}X#1#{} Mult when",
+                    "in a {C:attention}Boss Blind{}.",
+                    "Has {C:red}#2#{} uses left.",
+                }
+            },
+            j_balf_gravity = {
+                name = 'Two Gravity Hammers',
+                text = {
+                    "Every time a {C:attention}Pair{} is played",
+                    "in a {C:attention}Boss Blind{},",
+                    "{C:planet}Level up{} Pair.",
+                }
+            },
+            j_balf_obblongale = {
+                name = 'Obblongale',
+                text = {
+                    "At the start of a blind",
+                    "{C:mult}Susses out{} a joker",
+                    "If that Joker is {C:attention}sold{},",
+                    "generates an {C:spectral}Ethereal Tag{}.",
+                }
+            },
+            j_balf_watermelon = {
+                name = 'Watermelon',
+                text = {
+                    "{C:mult}+#1#{} Mult",
+                    "{C:red}Self-Destructs{} when",
+                    "{C:attention}Boss Blind{} is defeated.",
+                }
+            },
+            j_balf_gummies = {
+                name = 'Fruit Gummies',
+                text = {
+                    "{C:mult}+#1#{} Mult to all played cards",
+                    "{C:red}Self-Destructs{} in {C:attention}#2#{} rounds.",
                 }
             },
             j_balf_myname = {
@@ -355,14 +473,6 @@ return {
                     "{C:red}Self-Destructs{}.",
                 }
             },
-            j_balf_brokenunclear = {
-                name = "{C:inactive}You broke it{}",
-                text = {
-                    "{C:inactive}Whoops!, looks like you broke it!{}",
-                    "{C:red}Takes 1 dollar per hand played{}.",
-                    "{C:red}Do not sell this card{}.",
-                }
-            },
             j_balf_motherunclear = {
                 name = "Mother...",
                 text = {
@@ -375,6 +485,21 @@ return {
                 text = {
                     "{C:red}+#1#{} Discards",
                     "{C:red}-1{} Discards per {C:attention}Blind{} selected",
+                }
+            },
+            j_balf_tables = {
+                name = "The Tables",
+                text = {
+                    "If a {C:attention}Four of a Kind{} is Played,",
+                    "first {C:attention}Scored{} card becomes",
+                    "a {C:attention}Plank{} Card",
+                }
+            },
+            j_balf_lemons = {
+                name = "FishingLemons",
+                text = {
+                    "In {C:attention}Final Hand{}, first played",
+                    "card becomes {C:dark_edition}Negative{}",
                 }
             },
             j_balf_mother3 = {
@@ -421,6 +546,87 @@ return {
                     "Gives {C:money}Dollars{} equal to {C:white,X:money}X3{} the",
                     "sell value of the Joker destroyed.",
                 }
+            },
+            j_balf_crash = {
+                name = 'Crash Message',
+                text = {
+                    "{C:attention}Scrap{} cards now count as",
+                    "both {C:attention}Gold{} and {C:attention}Steel{} Cards",
+                }
+            },
+            j_balf_opportunity = {
+                name = 'The Opportunity',
+                text = {
+                    "In {C:attention}Boss Blinds{}, triples",
+                    "all {C:attention}listed{} {C:green}probabilities{}",
+                    "{C:inactive}(ex: {C:green}1 in 4{C:inactive} -> {C:green}3 in 4{C:inactive})",
+                }
+            },
+            j_balf_balf = {
+                name = 'Balafreaks',
+                text = {
+                    "{C:red}+#2#{} Mult per Joker",
+                    "from {C:balf_rainbow}Balafreaks{}",
+                    "{C:inactive}(Currently +{}{C:attention}#1#{}{C:inactive} Mult){}",
+                }
+            },
+            j_balf_member = {
+                name = 'Member List',
+                text = {
+                    "{C:red}+1{} Mult per member",
+                    "In the {C:balf_rainbow}Freaktures{}, if you",
+                    "hold a {C:attention}Joker{} from {C:balf_rainbow}Balafreaks{}",
+                    "{C:inactive}(Currently +{}{C:attention}#1#{}{C:inactive} Mult){}",
+                }
+            },
+            j_balf_guardian = {
+                name = 'Elder Guardian Jumpscare',
+                text = {
+                    "{C:red}Destroys{} one {C:money}[Suit]{} from your {C:attention}deck{},",
+                    "{C:money}[Suit]{} is randomly chosen at",
+                    "the {C:attention}start of each blind{}",
+                    "{C:inactive}(Currently {V:1}#1#{}{C:inactive}){}",
+                }
+            },
+            j_balf_IOU = {
+                name = 'I. O. U.',
+                text = {
+                    "You can buy {C:green}1{}",
+                    "{C:attention}Joker, Consumeable,{}",
+                    "or {C:attention}Booster Pack{} for {C:green}Free{}",
+                    "per {C:attention}Ante{}.",
+                }
+            },
+            j_balf_sol = {
+                name = 'Sol',
+                text = {
+                    "Gains +{C:attention}#2#{} Hand Size",
+                    "each {C:attention}Boss Blind{} beat.",
+                    "{C:inactive}(Currently +{}{C:attention}#1#{}{C:inactive} Hand Size){}",
+                }
+            },
+            j_balf_spamton = {
+                name = "Spamton Crypto Scam",
+                text = {
+                    "Retriggers Cards with a rank of{C:attention}#2#{}",
+                    "{C:attention,s:1.997}#1#{} additional times,",
+                    "{C:money}[Rank]{} changes every round.",
+                },
+            },
+            j_balf_placeholder = {
+                name = "Placeholder",
+                text = {
+                    "{C:chips}+#1#{} Chips",
+                },
+            },
+            j_balf_batter = {
+                name = "The Batter",
+                text = {
+                    "{C:red}Destroys{} a random {C:attention}Card{} from",
+                    "{C:attention}Hand{} at the {C:attention}End of Round{}",
+                    "then gains {X:mult,C:white}X#2#{} Mult",
+                    "{C:inactive}(Currently{} {X:mult,C:white}X#3#{} {C:inactive}Mult){}",
+                },
             },
             j_balf_tyronne = {
                 name = 'Tyrone',
@@ -531,6 +737,14 @@ return {
 				text = {
                     "Copies last card",
                     "scored before it.",
+				}
+			},
+            m_balf_plank = {
+				name = "Plank Card",
+				text = {
+                    "Gains {X:mult,C:white}X#1#{} Mult per",
+                    " {C:attention}Plank Card{} in Deck,",
+                    "{C:inactive}(Currently{} {X:mult,C:white}X#3#{} {C:inactive}Mult){}",
 				}
 			},
             m_balf_scrap = {

@@ -12,7 +12,7 @@ SMODS.Blind({
     boss_colour = HEX('BF10BC'),
     recalc_debuff = function(self, card, from_blind)
         for i = 1, #G.jokers.cards do
-            if G.jokers.cards[i].edition == "e_balf_mother" then
+            if G.jokers.cards[i].edition.key == "e_balf_mother" then
                 G.jokers.cards[i]:set_debuff(true)
             end 
         end

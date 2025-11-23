@@ -17,6 +17,45 @@ SMODS.Enhancement {
     end
 }
 
+balf.plankCount = balf.plankCount or 0
+function balf.planks()
+    local plank_tally = 0
+    for _, playing_card in ipairs(G.playing_cards) do
+        if playing_card.config.center == G.P_CENTERS.m_balf_plank then 
+            plank_tally = plank_tally +1 
+        end
+    end
+    balf.plankCount = plank_tally
+    return plank_tally
+end
+
+SMODS.Enhancement {
+    key = 'plank',
+    atlas = 'Enhancements',
+    pos = { x = 2, y = 0 },
+    config = { x_mult = 1 },
+    weight = 0,
+    loc_vars = function(self, info_queue, card)
+        return { vars = { 0.025, 1, self.config.x_mult } }
+    end,
+    in_pool = function(self)
+        return false
+    end,
+    calculate = function(self, card, context)
+        if context.cardarea == G.play then
+            balf.planks()
+            self.config.x_mult = ( 1+ (0.025 * balf.planks()))
+        end
+        if context.cardarea == G.play and context.main_scoring and self.config.x_mult > 1 then
+            balf.planks()
+            self.config.x_mult = ( 1+ (0.025 * balf.plankCount))
+            return {
+                xmult = self.config.x_mult
+            }
+        end
+    end
+}
+
 SMODS.Enhancement {
     key = 'goop',
     atlas = 'Enhancements',

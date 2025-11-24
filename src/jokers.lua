@@ -82,7 +82,6 @@ SMODS.Joker {
                             end
                         end
                         if G.jokers.cards[my_pos].edition ~= nil then
-                            print(self.edition)
                             G.GAME.pool_flags.joe_change = true
                             card:start_dissolve()
                             SMODS.add_card {
@@ -881,11 +880,8 @@ SMODS.Joker {
         if context.joker_main then
             local gains = 0
             for _, joker in ipairs(G.jokers.cards) do
-                print(joker.config.center_key)
                 if joker ~= card and string.find(joker.config.center_key, "balf", 1, true) then
-                    print("hellyeah")
                     gains = gains + card.ability.extra.gain
-                    print(gains)
                 end
             end
             card.ability.extra.mult = 0
@@ -1157,10 +1153,17 @@ SMODS.Joker {
     end,
     calculate = function(self, card, context)
         if context.cardarea == G.play and context.individual and context.other_card:is_suit((card.ability.extra.suit)) then
-            context.other_card:start_dissolve()
+            context.other_card.destroy = true
             return {
                 mult = card.ability.extra.mult,
             }
+        end
+        if context.after then
+            for _, playing_card in ipairs(G.playing_cards) do
+                if playing_card.destroy ~= nil then 
+                    playing_card:remove()
+                end
+            end
         end
     end
 }
@@ -1178,7 +1181,6 @@ SMODS.Joker {
     end,
     add_to_deck = function(self, card, from_debuff)
         G.GAME.modifiers.booster_choice_mod = (G.GAME.modifiers.booster_choice_mod or 0) + card.ability.extra.booster
-        print(G.GAME.modifiers.booster_choice_mod)
     end,
     remove_from_deck = function(self, card, from_debuff)
         G.GAME.modifiers.booster_choice_mod = (G.GAME.modifiers.booster_choice_mod or 0) - card.ability.extra.booster
@@ -1338,7 +1340,6 @@ SMODS.Joker {
         end
         local check = card.ability.extra.lor
         if context.retrigger_joker_check and not context.retrigger_joker and context.other_card ~= self then
-            print(check)
             if check == 1 then
                 if context.other_card == G.jokers.cards[my_pos - 1] then
                     return {
@@ -1510,7 +1511,6 @@ SMODS.Joker {
         if context.joker_main then
             local test = 0
             for _, joker in ipairs(G.jokers.cards) do
-                print(joker.config.center_key)
                 if joker ~= card and string.find(joker.config.center_key, "balf", 1, true) then
                     test = test+1
                     card.ability.extra.allowed = true
@@ -1546,8 +1546,6 @@ SMODS.Joker {
             local guardian_suits = { 'Spades', 'Hearts', 'Clubs', 'Diamonds' }
             local guardian_suit = pseudorandom_element(guardian_suits, pseudoseed('balf_guardian'))
             card.ability.extra.suit = guardian_suit
-            print(guardian_suit)
-            print(card.ability.extra.suit)
             if G.playing_card then
                 while card.ability.extra.retry == true do
                     for _, playing_card in ipairs(G.playing_cards) do

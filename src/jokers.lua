@@ -834,7 +834,7 @@ SMODS.Joker {
     cost = 5,
     config = { extra = { up = true } },
     calculate = function(self, card, context)
-        if card.ability.extra.up == true and G.shop_jokers and G.shop_booster then 
+        if context.starting_shop and card.ability.extra.up == true and G.shop_jokers and G.shop_booster then 
             for k, v in pairs(G.shop_jokers.cards) do
                 v.ability.couponed = true
                 v.ability.IOU = true
@@ -846,7 +846,7 @@ SMODS.Joker {
                 v:set_cost()
             end
         end
-        if context.buying_card and context.card.ability.IOU == true then
+        if context.buying_card and G.shop_jokers and context.card.ability.IOU == true then
             card.ability.extra.up = false
             for k, v in pairs(G.shop_jokers.cards) do
                 v.ability.couponed = false

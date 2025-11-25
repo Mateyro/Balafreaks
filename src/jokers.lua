@@ -1320,7 +1320,7 @@ SMODS.Joker {
     key = "neighbour",
     atlas = 'Jokers',
     pos = { x = 11, y = 1 },
-    rarity = 2,
+    rarity = 3,
     blueprint_compat = true,
     cost = 7,
     config = { extra = { retriggers = 1, lor = 1 } },
@@ -1985,7 +1985,7 @@ SMODS.Joker {
     rarity = 3,
     blueprint_compat = false,
     cost = 11,
-    config = { extra = { squared = 2 } },
+    config = { extra = { squared = 1.5 } },
     loc_vars = function(self, info_queue, card)
     return { vars = {card.ability.extra.squared} }
     end,

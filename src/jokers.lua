@@ -1789,7 +1789,7 @@ SMODS.Joker {
         elseif not context.blueprint and context.balf and context.balf.joker_sold then
             if balf.lastSold.config.center_key == "j_diet_cola" then
                 card.ability.extra.cola = true
-            elseif balf.lastSliced.config.center_key == "j_egg" then
+            elseif balf.lastSold.config.center_key == "j_egg" then
                 card.ability.extra.egg = card.ability.extra.egg +3
             end
         elseif context.joker_main then
